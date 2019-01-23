@@ -27,6 +27,11 @@
                     a longer period of time?
                 </a>
             </li>
+            <li>
+                <a href="#account-collections">
+                    What are Account Collections and how do they work?
+                </a>
+            </li>
         </ul>
     </div>
 </div>
@@ -110,5 +115,29 @@
         wireless accounts usually last 7 days. If you click the
         <strong>Extend</strong> button, the account will expire seven days from
         today.</p>
+    </div>
+</div>
+
+<a name="account-collections"></a>
+<div class="island">
+    <div class="island-header">
+        <h3>What are Account Collections and how do they work?</h3>
+    </div>
+    <div class="island-body">
+        <p>Collections make it easier to manage multiple accounts at the same
+        time. For example, you might have 20 accounts for guest lecturers who
+        visit once a year. You created guest accounts for them last year, but
+        those accounts have expired and they need to use them again.</p>
+        <p>Instead of finding all 20 accounts and hitting the <strong>Extend
+        Expiry</strong> button each time, you can create these accounts as part
+        of a collection, and give the collection a name like <strong>Visiting
+        Guest Lecturers</strong>. When these lecturers return each year, all you
+        have to do is look up the collection and press the <strong>Extend
+        All</strong> button.</p>
+        <p>You don't need to do anything special to set up a collection.
+        Whenever you create a batch of accounts by uploading a CSV to
+        <?php echo $systemName; ?>, a collection is automatically created.</p>
+        <p>Remember to give your collection a meaningful name so it's easier to
+        find later.</p>
     </div>
 </div>

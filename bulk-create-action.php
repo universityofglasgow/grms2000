@@ -14,6 +14,12 @@
         die('Invalid File!');
     }
     
+     $myAccountTypes = getMyAccountTypes();
+    // Don't trust the posted account type - actually check they are allowed to create it.
+    if(!isset($myAccountTypes[$_POST['type']])) {
+        die('Incorrect account type!');
+    }
+    
     // If dates are set, check and use them. Otherwise, use the defaults
     
     $accountStartDate = prettifyDate(time(), 'ymd');

@@ -10,6 +10,24 @@
 	require("header.php");
 
 ?>
+<ul class="breadcrumb">
+    <li>
+        <a href="index.php">
+            <i class="fa fa-home"></i> Home
+        </a>
+    </li>
+    <li class="last">
+        <a href="#">
+            <i class="fa fa-gear"></i> Accounts Processed
+        </a>
+    </li>
+    <li class="help">
+        <a href="help.php">
+            <i class="fa fa-question-circle"></i> Help
+        </a>
+    </li>
+</ul>
+
 
 <div class="island">
 	<div class="island-header">
