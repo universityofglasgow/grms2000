@@ -6,6 +6,13 @@
     
     $grmsDB = new mysqli("servername", "username", 'p@ssw0rd', "databasename");
     
+    $dbsettings = Array(
+        'connection_string'  => 'mysql_host=__database_server__;dbname=__database_name__',
+        'username'           => '__username__',
+        'password'           => '__password__',
+        'return_result_sets' => true
+    );
+    
     // This is used as a salt for generating action tokens for password resets etc.
 
     $actionSalt = 'k@T3_8u$H';
@@ -53,5 +60,7 @@
                                 'creationgroup'     =>  ''
                         )
     );
+    
+    ORM::configure($dbsettings);
     
 ?>

@@ -10,6 +10,20 @@
 	require("header.php");
 
 ?>
+
+<ul class="breadcrumb">
+    <li class="last">
+        <a href="index.php">
+            <i class="fa fa-home"></i> Home
+        </a>
+    </li>
+    <li class="help">
+        <a href="help.php">
+            <i class="fa fa-question-circle"></i> Help
+        </a>
+    </li>
+</ul>
+
 <div class="island">
     <div class="island-header">
         <h3>Welcome to <?php echo $systemName; ?></h3>

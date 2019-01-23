@@ -11,6 +11,23 @@
 	
 
 ?>
+<ul class="breadcrumb">
+    <li>
+        <a href="index.php">
+            <i class="fa fa-home"></i> Home
+        </a>
+    </li>
+    <li class="last">
+        <a href="bulk-edit.php">
+            <i class="fa fa-pencil"></i> Manage Users
+        </a>
+    </li>
+    <li class="help">
+        <a href="help.php">
+            <i class="fa fa-question-circle"></i> Help
+        </a>
+    </li>
+</ul>
 <div class="island">
     <div class="island-header">
         <h3>Manage Users</h3>
@@ -28,9 +45,7 @@
                 <label for="action" class="control-label col-sm-3">Action</label>
                 <div class="col-sm-9">
                     <select id="action" name="action" class="form-control">
-                        <option value="extend-30">Set expiry date to 1 month from today</option>
-                        <option value="extend-180">Set expiry date to 6 months from today</option>
-                        <option value="extend-365" selected="selected">Set expiry date to 12 months from today</option>
+                        <option value="extend">Extend Expiry Date</option>
                         <option value="reset">Reset passwords and email users</option>
                     </select>
                 </div>

@@ -25,16 +25,10 @@
     <h4>Account Collections</h4>
     <ul>
         <li>
-            <a href="bulk-create.php"><i class="fa fa-users"></i> Create Collection</a>
+            <a href="bulk-create.php"><i class="fa fa-users"></i> New Collection</a>
         </li>
         <li>
             <a href="collections.php"><i class="fa fa-pencil"></i> My Collections</a>
-        </li>
-    </ul>
-    <h4>Conference Accounts</h4>
-    <ul>
-        <li>
-            <a href="conference-create.php"><i class="fa fa-university"></i> Create New Accounts</a>
         </li>
     </ul>
     <h4>Bulk Account Management</h4>

@@ -6,10 +6,11 @@
 		<link rel="stylesheet" href="css/font-awesome.css" />
 		<link rel="stylesheet" href="css/base.css" />
 		<link rel="stylesheet" href="css/jquery-ui.css" />
+		<link rel="stylesheet" href="css/jquery-ui-structures.css" />
+		<link rel="stylesheet" href="css/jquery-ui-theme.css" />
 		<script src="js/jquery.js"></script>
 		<script src="js/jquery-ui.js"></script>
 		<script src="js/jquery-validate.js"></script>
-		<script src="js/jquery-tablesort.js"></script>
 		<script src="js/bootstrap.js"></script>
 		<script src="js/page-setup.js"></script>
 	</head>

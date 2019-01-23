@@ -11,6 +11,24 @@
 	
 
 ?>
+<ul class="breadcrumb">
+    <li>
+        <a href="index.php">
+            <i class="fa fa-home"></i> Home
+        </a>
+    </li>
+    <li class="last">
+        <a href="bulk-create.php">
+            <i class="fa fa-group"></i> Create Collection
+        </a>
+    </li>
+    <li class="help">
+        <a href="help.php">
+            <i class="fa fa-question-circle"></i> Help
+        </a>
+    </li>
+</ul>
+
 <div class="island">
     <div class="island-header">
         <h3>Create Collection</h3>
@@ -32,15 +50,43 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="sessionName" class="control-label col-sm-3">Duration</label>
+                <label for="sessionName" class="control-label col-sm-3">Account Type</label>
                 <div class="col-sm-9">
-                    <select id="duration" name="duration" class="form-control">
-                        <option value="30">1 Month</option>
-                        <option value="180">6 Months</option>
-                        <option value="365" selected="selected">12 Months</option>
+                    <select id="type" name="type" class="form-control">
+                        <?php
+                            $accountTypes = getMyAccountTypes();
+                            
+                            foreach($accountTypes as $code=>$friendlyName) {
+                                echo '<option value="'.$code.'">'.$friendlyName['name'].'</option>';
+                            }
+                        ?>
                     </select>
                 </div>
             </div>
+            <?php if(userHasFlag($_SESSION['username'], 'conference')) { ?>
+            <div class="form-group">
+                <label for="startdate" class="control-label col-sm-3">Start Date</label>
+                <div class="col-sm-9">
+                    <input type="date" id="startdate" name="startdate" class="form-control date-picker-field" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="enddate" class="control-label col-sm-3">End Date</label>
+                <div class="col-sm-9">
+                    <input type="date" id="enddate" name="enddate" class="form-control date-picker-field" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="enddate" class="control-label col-sm-3">Conference Usernames</label>
+                <div class="col-sm-9">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked="checked" id="useconferenceword" name="useconferenceword" />
+                        <label class="form-check-label" for="useconferenceword">Use consistent usernames</label>
+                    </div>
+                    <p class="form-text text-muted">If you uncheck this box, the usernames will be based on the person's last name. If you leave it checked, the usernames for this collection will all start with the same five-letter word.</p>
+                </div>
+            </div>
+            <?php } ?>
             <div class="form-group">
                 <div class="col-sm-9 col-sm-push-3">
                    <button type="submit" class="btn btn-block btn-success"><i class="fa fa-plus-circle"></i> Create Accounts</button>
