@@ -35,7 +35,7 @@
                 $_SESSION['lastprocess'][] = Array(
                     'username' => false,
                     'colour'   => 'warning',
-                    'status'   => 'This person already has a real LDAP account. Their username is <strong>.'.$doesExist['username'].'</strong>'
+                    'status'   => 'This person already has a real LDAP account. Their username is <strong>'.$doesExist['username'].'</strong>'
                 );
                 logAction('not-created-ldap', $doesExist['username']);
                 break;

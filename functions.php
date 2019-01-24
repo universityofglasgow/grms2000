@@ -124,6 +124,12 @@ function checkIfUserExists($email) {
         return Array('type'=>'ldap', 'username'=> $userDetails['cn'][0]);
     }
     
+    $userDetails = searchLDAP('homeemailaddress='.$email);
+                
+    if ($userDetails !== false) {
+        return Array('type'=>'ldap', 'username'=> $userDetails['cn'][0]);
+    }
+    
     // See if a local account exists
     
     $userExists = ORM::forTable('users')->where(Array('email'=>$email))->findOne();
