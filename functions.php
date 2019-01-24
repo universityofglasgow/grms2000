@@ -114,17 +114,17 @@ function searchLDAP($search) {
 }
 
 function checkIfUserExists($email) {
-    global $grmsDB;
+    $ldapconfig = getLDAPConnection();
     
     // See if a proper LDAP account exists
     
-    $userDetails = searchLDAP('mail='.$email);
+    $userDetails = searchLDAP($ldapconfig['emailfield'].'='.$email);
                 
     if ($userDetails !== false) {
         return Array('type'=>'ldap', 'username'=> $userDetails['cn'][0]);
     }
     
-    $userDetails = searchLDAP('homeemailaddress='.$email);
+    $userDetails = searchLDAP($ldapconfig['altemailfield'].'='.$email);
                 
     if ($userDetails !== false) {
         return Array('type'=>'ldap', 'username'=> $userDetails['cn'][0]);
