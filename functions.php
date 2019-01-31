@@ -38,7 +38,9 @@ function ldap_authenticate($user, $password) {
             $result = ldap_get_entries( $ds, $r);
             if ($result[0]) {
                 if (ldap_bind( $ds, $result[0]['dn'], $password) ) {
-	                if(userHasFlag($user, 'grms')) {
+                    processUserFlags($result[0][$ldapconfig['grouparray']]);
+	               getMyAccountTypes();
+	                if(userHasFlag('grms')) {
 	                	$_SESSION['username'] = $result[0][$ldapconfig['usernamefield']][0];
 	                	$_SESSION['email'] = $result[0][$ldapconfig['emailfield']][0];
 	                	$_SESSION['firstname'] = $result[0][$ldapconfig['firstnamefield']][0];
@@ -64,21 +66,17 @@ function ldap_authenticate($user, $password) {
 function getMyAccountTypes() {
     global $accountTypes;
     
-    if(userHasFlag($_SESSION['username'], 'admin')) {
-        return $accountTypes;
-    }
-    
     $myAccountTypes = Array();
-    
-    $matchedFlags = ORM::forTable('userFlags')->where(Array('username'=>$_SESSION['username']))->whereLike(Array('flag'=>'account-%'))->findMany();
-
-    foreach($matchedFlags as $row) {
-
-        $type = substr($row->flag, 8);
-        $myAccountTypes[$type] = $accountTypes[$type];
+    if(userHasFlag('admin')) {
+        $_SESSION['types'] = $accountTypes;
+        return true;
     }
-    
-    return $myAccountTypes;
+    foreach($_SESSION['flags'] as $flag) {
+        if(strpos($flag, 'account-') === 0) {
+            $myAccountTypes[substr($flag, 8)] = $accountTypes[substr($flag, 8)];
+        }
+    }
+    $_SESSION['types'] = $myAccountTypes;
 }
 
 function getDurationForAccountType($code) {
@@ -87,11 +85,9 @@ function getDurationForAccountType($code) {
     return $accountTypes[$code]['duration'];
 }
 
-function userHasFlag($user, $flag) {
+function userHasFlag($flag) {
 	
-	$flag = ORM::forTable('userFlags')->where(Array('username'=>$user,'flag'=>$flag))->count();
-	
-	return ($flag==1);
+	return isset($_SESSION['flags'][$flag]);
 	
 }
 
@@ -160,10 +156,26 @@ function generatePassword() {
     return $p;
 }
 
-function extendDate($username, $duration) {
-    global $grmsDB;
+function extendDate($username, $duration=false) {
+    $userExists = ORM::forTable('users')->where(Array('username'=>$username))->findOne();
     
-    $grmsDB->query('UPDATE users SET expiryDate=GREATEST(expiryDate, DATE_ADD(CURDATE(), INTERVAL '.$duration.' DAY)) WHERE username="'.$username.'"');
+    if($duration===false) {
+        $duration = getDurationForAccountType($userExists->type);
+    }
+    
+    $currentExpiryTimestamp = strtotime($userExists->expiryDate);
+    error_log('CURR: '.$currentExpiryTimestamp);
+    $potentialExpiryTimestamp = time()+($duration*86400);
+    error_log('PROP: '.$potentialExpiryTimestamp);
+    error_log('PTXT: '.prettifyDate($potentialExpiryTimestamp, 'ymd'));
+    
+    error_log(print_r($userExists, true));
+    
+    if($currentExpiryTimestamp < $potentialExpiryTimestamp) {
+        $userExists->expiryDate = prettifyDate($potentialExpiryTimestamp, 'ymd');
+    }
+    
+    $userExists->save();
 }
 
 function resetPassword($username) {
@@ -267,7 +279,7 @@ function outputUserPanel($username) {
     } else {
         echo '<div class="account-tools"><div class="btn-toolbar">';
         echo '<a href="action.php?username='.$userDetails->username.'&action=resetpassword&token='.sha1($actionSalt.$_SESSION['username'].'resetpassword'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-info"><i class="fa fa-unlock-alt"></i> Reset Password</a>';
-        echo '<a href="action.php?username='.$userDetails->username.'&action=extend&days=365&token='.sha1($actionSalt.$_SESSION['username'].'extend'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-primary"><i class="fa fa-calendar"></i> Extend Expiry Date</a>';
+        echo '<a href="action.php?username='.$userDetails->username.'&action=extend&token='.sha1($actionSalt.$_SESSION['username'].'extend'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-primary"><i class="fa fa-calendar"></i> Extend Expiry Date</a>';
         if($userDetails->active == 1) {
             echo '<a href="action.php?username='.$userDetails->username.'&action=deactivate&token='.sha1($actionSalt.$_SESSION['username'].'deactivate'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-danger"><i class="fa fa-power-off"></i> Deactivate</a>';
         } else {
@@ -552,6 +564,38 @@ function out($text, $prefix=" ") {
     $secs = time() - $timeAtStart;
     
     echo '[ '.gmdate('H:i:s', $secs).' ] '.$prefix.' '.$text.PHP_EOL;
+}
+
+function getUserFlags($username) {
+    
+    
+    $matchedFlags = ORM::forTable('userFlags')->where(Array('username'=>$username))->findMany();
+    
+    $flags = Array();
+
+    foreach($matchedFlags as $row) {
+
+        $flags[$row['flag']] = $row['flag'];
+    }
+    
+    return $flags;
+}
+
+function processUserFlags($grouparray) {
+    global $groupFlags;
+    
+    unset($groupArray['count']);
+    
+    $userFlags = getUserFlags($_SESSION['username']);
+    
+    foreach($grouparray as $group) {
+        if(isset($groupFlags[$group])) {
+            $userFlags[$groupFlags[$group]] = $groupFlags[$group];
+        }
+        
+    }
+    
+    $_SESSION['flags'] = $userFlags;
 }
     
 ?>

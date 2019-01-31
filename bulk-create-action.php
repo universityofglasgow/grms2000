@@ -14,7 +14,7 @@
         die('Invalid File!');
     }
     
-     $myAccountTypes = getMyAccountTypes();
+     $myAccountTypes = $_SESSION['types'];
     // Don't trust the posted account type - actually check they are allowed to create it.
     if(!isset($myAccountTypes[$_POST['type']])) {
         die('Incorrect account type!');
@@ -24,7 +24,7 @@
     
     $accountStartDate = prettifyDate(time(), 'ymd');
     
-    if(userHasFlag($_SESSION['username'], 'conference')) {
+    if(userHasFlag('conference')) {
         if(!empty($_POST['startdate'])) {
             $accountStartDate = $_POST['startdate'];
         }

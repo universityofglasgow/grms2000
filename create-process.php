@@ -7,7 +7,7 @@
     $_SESSION['lastprocess'] = Array();
     
     if($doesExist === false) {
-        $myAccountTypes = getMyAccountTypes();
+        $myAccountTypes = $_SESSION['types'];
         // Don't trust the posted account type - actually check they are allowed to create it.
         if(isset($myAccountTypes[$_POST['type']])) {
             $duration = getDurationForAccountType($_POST['type']);

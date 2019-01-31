@@ -58,7 +58,7 @@
                 <div class="col-sm-9">
                     <select id="type" name="type" class="form-control">
                         <?php
-                            $accountTypes = getMyAccountTypes();
+                            $accountTypes = $_SESSION['types'];
                             
                             foreach($accountTypes as $code=>$friendlyName) {
                                 echo '<option value="'.$code.'">'.$friendlyName['name'].'</option>';

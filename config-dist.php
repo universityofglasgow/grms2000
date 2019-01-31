@@ -4,8 +4,6 @@
     
     // Database used to hold data
     
-    $grmsDB = new mysqli("servername", "username", 'p@ssw0rd', "databasename");
-    
     $dbsettings = Array(
         'connection_string'  => 'mysql_host=__database_server__;dbname=__database_name__',
         'username'           => '__username__',
@@ -62,5 +60,13 @@
     );
     
     ORM::configure($dbsettings);
+    
+    // Maps LDAP groups to roles within the system
+    
+    groupFlags = Array(
+        'cn=ITStaff,o=myorg'    => 'account-wifi',
+        'cn=ELearning,o=org'    => 'account-moodle',
+        'cn=Sysadmins,o=myorf'  => 'admin'
+    );
     
 ?>

@@ -54,11 +54,11 @@
                 );
                 break;
             case 'extend':
-                extendDate($username, $_GET['days']);
+                extendDate($username);
                 $_SESSION['lastprocess'][] = Array(
                     'username' => $username,
                     'colour'   => 'success',
-                    'status'   => 'This user\'s expiry date has been extended to '.$_GET['days'].' from today.'
+                    'status'   => 'This user\'s expiry date has been extended.'
                 );
                 break;
             case 'activate':
