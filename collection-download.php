@@ -21,22 +21,22 @@
         
         foreach($usersInCollection as $user) {
             $output[] = Array(
-                $user->username,
-                $user->password,
-                $user->firstname,
-                $user->lastname,
-                $user->email,
-                $user->status
+                q($user->username),
+                q($user->password),
+                q($user->firstname),
+                q($user->lastname),
+                q($user->email),
+                q($user->status)
             );
         }
         
         header('Content-Type: application/csv');
         header('Content-disposition: filename="collection-details-'.$_GET['collection'].'.csv"');
         
-        echo implode(', ', $headings).PHP_EOL;
+        echo implode(',', $headings).PHP_EOL;
         
         foreach($output as $row) {
-            echo implode(', ', $row).PHP_EOL;
+            echo implode(',', $row).PHP_EOL;
         }
     }
     

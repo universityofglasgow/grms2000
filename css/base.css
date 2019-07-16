@@ -894,6 +894,13 @@ td.stat {
 
 .statistic {
     padding: 10px;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.statistic .stat {
+    display: block;
+    font-size: 2em;
 }
 
 .chart {
@@ -1227,6 +1234,10 @@ td span, th span {
     float: right;
 }
 
+.user-card h3 .status-icon i {
+    margin-left: 0.3em;
+}
+
 .user-card h4 {
     font-size: 1.1em;
     line-height: 18px;
@@ -1280,6 +1291,7 @@ td span, th span {
 
 .alert {
     padding: 5px 10px;
+    margin-bottom: 10px;
 }
 
 .alert i {

@@ -63,11 +63,21 @@
                 break;
             case 'activate':
                 setAccountActivation($username, 1);
-                $_SESSION['lastprocess'][] = Array(
-                    'username' => $username,
-                    'colour'   => 'success',
-                    'status'   => 'This account has been activated.'
-                );
+                $accountDetails = getUserDetails($username);
+                if(strtotime($accountDetails->expiryDate) < time()) {
+                    extendDate($username);
+                    $_SESSION['lastprocess'][] = Array(
+                        'username' => $username,
+                        'colour'   => 'success',
+                        'status'   => 'This account has been activated and the expiry date has been extended.'
+                    );
+                } else {
+                    $_SESSION['lastprocess'][] = Array(
+                        'username' => $username,
+                        'colour'   => 'success',
+                        'status'   => 'This account has been activated.'
+                    );
+                }
                 break;
             case 'deactivate':
                 setAccountActivation($username, 0);

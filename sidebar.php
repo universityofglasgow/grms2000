@@ -22,6 +22,7 @@
             <a href="mine.php"><i class="fa fa-list"></i> Accounts I Created</a>
         </li>
     </ul>
+    <?php if(userHasFlag('conference')) { ?>
     <h4>Account Collections</h4>
     <ul>
         <li>
@@ -31,10 +32,13 @@
             <a href="collections.php"><i class="fa fa-pencil"></i> My Collections</a>
         </li>
     </ul>
+    <?php } ?>
+    <?php if(userHasFlag('manager')) { ?>
     <h4>Bulk Account Management</h4>
     <ul>
         <li>
             <a href="bulk-edit.php"><i class="fa fa-table"></i> Manage With Spreadsheet</a>
         </li>
     </ul>
+    <?php } ?>
 </div>

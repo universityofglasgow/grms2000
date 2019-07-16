@@ -37,6 +37,7 @@
                     <span class="description">Create one new account by typing the details into a form.</span>
                 </a>
             </li>
+            <?php if(userHasFlag('conference')) { ?>
             <li class="col-xs-4">
                 <a href="bulk-create.php">
                     <span class="icon"><i class="fa fa-users"></i></span>
@@ -44,6 +45,7 @@
                     <span class="description">Upload a spreadsheet of names and email addresses to create a batch of accounts.</span>
                 </a>
             </li>
+            <?php } ?>
             <li class="col-xs-4">
                 <a href="mine.php">
                     <span class="icon"><i class="fa fa-list"></i></span>
@@ -54,5 +56,52 @@
         </ul>
     </div>
 </div>
+<?php if(userHasFlag('admin')) { ?>
+<div class="island">
+    <div class="island-header">
+        <h3>Statistics</h3>
+    </div>
+    <div class="island-body">
+        <ul class="row dashboard-icons">
+            <li class="statistic col-xs-4">
+                <span class="stat">
+                    <?php 
+                        
+                        $stat = statCurrentlyActive();
+                        
+                        echo number_format($stat);
+                        
+                    ?>
+                </span>
+                active account<?php echo s($stat); ?>
+            </li>
+            <li class="statistic col-xs-4">
+                <span class="stat">
+                    <?php 
+                        
+                        $stat = statCreatedToday();
+                        
+                        echo number_format($stat);
+                        
+                    ?>
+                </span>
+                account<?php echo s($stat); ?> created today
+            </li>
+            <li class="statistic col-xs-4">
+                <span class="stat">
+                    <?php 
+                        
+                        $stat = statCollections();
+                        
+                        echo number_format($stat);
+                        
+                    ?>
+                </span>
+                collection<?php echo s($stat); ?>
+            </li>
+        </ul>
+    </div>
+</div>
+<?php } ?>
 
 <?php include("footer.php"); ?>

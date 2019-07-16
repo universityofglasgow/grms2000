@@ -5,7 +5,7 @@
 
     $activeSection = 'dashboard';
 
-	$pageTitle = "Accounts I Created";
+	$pageTitle = "My Collections";
 	
 	require("header.php");
 

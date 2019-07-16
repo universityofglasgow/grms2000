@@ -17,17 +17,17 @@
             			<p class="charity">The University of Glasgow is a registered Scottish charity: Registration Number SC004401</p>
 		            </div>
                     <div class="col-sm-3 footer-links">
-                        <h4>Learning & Teaching Centre</h4>
+                        <h4>Learning & Teaching</h4>
                         <ul>
             				<li><a href="https://moodle2.gla.ac.uk">University of Glasgow Moodle</a></li>
             				<li><a href="https://classresponse.gla.ac.uk">Class Response</a></li>
-            				<li><a href="https://inspector.gla.ac.uk">Inspector</a></li>
+            				<li><a href="https://moodleinspector.gla.ac.uk">Inspector</a></li>
+            				<li><a href="https://moodleinspector.gla.ac.uk/grms"><?php echo $systemName; ?></a></li>
 			            </ul>
 		            </div>
             		<div class="col-sm-3 footer-links">
             			<h4>Current Students</h4>
             			<ul>
-            				<li><a href="http://www.gla.ac.uk/students/">Information for students</a></li>
             				<li><a href="http://www.gla.ac.uk/students/myglasgow/">MyGlasgow students</a></li>
             			</ul>
             			

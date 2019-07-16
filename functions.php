@@ -87,7 +87,7 @@ function getDurationForAccountType($code) {
 
 function userHasFlag($flag) {
 	
-	return isset($_SESSION['flags'][$flag]);
+	return (isset($_SESSION['flags']['admin']) || isset($_SESSION['flags'][$flag]));
 	
 }
 
@@ -179,24 +179,22 @@ function extendDate($username, $duration=false) {
 }
 
 function resetPassword($username) {
-    global $grmsDB;
-    
     $userDetails = getUserDetails($username);
-    
     $newPassword = generatePassword();
     
-    $grmsDB->query('UPDATE users SET password=sha1("'.$newPassword.'") WHERE username="'.$username.'"');
+    $user = ORM::forTable('users')->where(Array('username'=>$username))->findOne();
+    $user->password = $newPassword;
+    $user->save();
+    
     sendEmail($userDetails->email, $userDetails->firstname, $userDetails->username, $newPassword, 'reset');
     
     return $newPassword;
 }
 
 function setAccountActivation($username, $active=0) {
-    global $grmsDB;
-    
-    $grmsDB->query('UPDATE users SET active='.$active.' WHERE username="'.$username.'"');
-    
-    return false;
+    $user = ORM::forTable('users')->where(Array('username'=>$username))->findOne();
+    $user->active = $active;
+    $user->save();
 }
 
 function createAccount($firstname, $lastname, $email, $startDate, $endDate, $type, $username=false) {
@@ -211,12 +209,16 @@ function createAccount($firstname, $lastname, $email, $startDate, $endDate, $typ
     $user->email = $email;
     $user->creationDate = $startDate;
     $user->expiryDate = $endDate;
-    $user->creator = $_SESSION['username'];
+    if(isset($_SESSION['username'])) {
+        $user->creator = $_SESSION['username'];
+    } else {
+        $user->creator = 'aw262w';
+    }
     $user->active = 1;
     $user->type = $type;
     $user->save();
     
-    sendEmail($email, $firstname, $lastname, $password, 'created');
+    //sendEmail($email, $firstname, $lastname, $password, 'created');
     
     return $username;
 }
@@ -259,34 +261,55 @@ function outputUserPanel($username) {
     echo '<div class="user-card">';
     echo '<img src="img/avatar-blank.jpg" alt="" />';
     echo '<h3><span class="name">'.$userDetails->firstname.' '.$userDetails->lastname.'</span><span class="username">'.$userDetails->username.'</span><span class="status-icon">';
-    if($userDetails->active == 0) {
-        echo '<span class="fail">Deactivated <i class="fa fa-clock-o"></i></span>';
-    } else {
-        if (strtotime($userDetails->expiryDate) > time()) {
-            echo '<span class="good">Active <i class="fa fa-calendar-check-o"></i></span?';
-        } else {
-            echo '<span class="warn">Expired <i class="fa fa-calendar-times-o"></i></span>';
-        }
+    switch($userDetails->active) {
+        case 0:
+            echo '<span class="fail">Disabled <i class="fa fa-clock-o"></i></span>';
+            break;
+        case 1:
+            echo '<span class="good">Active <i class="fa fa-calendar-check-o"></i></span>';
+            break;
+        case 2:
+            echo '<span class="warn">Not Active Yet <i class="fa fa-calendar-times-o"></i></span>';
+            break;
+        case 3:
+            echo '<span class="fail">Expired <i class="fa fa-clock-o"></i></span>';
+            break;
+        case 4:
+            echo '<span class="fail">Expired <i class="fa fa-clock-o"></i></span>';
+            break;
     }
     echo '</span></h3>';
     echo '<h4>'.$userDetails->email.'</h4>';
     echo '<p>Created on '.prettifyDate(strtotime($userDetails->creationDate), 'sd').'</p><p>Expires on '.prettifyDate(strtotime($userDetails->expiryDate), 'sd').'</p>';
-    if(false) {
-        echo '<div class="account-tools">';
-        echo '<a href="action.php?username='.$userDetails->username.'&action=resetpassword&token='.sha1($actionSalt.$_SESSION['username'].'resetpassword'.$userDetails->userid.$userDetails->username).'"><i class="fa fa-unlock-alt"></i> Reset Password</a>';
-        echo '<a href="action.php?username='.$userDetails->username.'&action=extend&days=365&token='.sha1($actionSalt.$_SESSION['username'].'extend'.$userDetails->userid.$userDetails->username).'"><i class="fa fa-calendar"></i> Extend Expiry Date</a>';
-        echo '</div>';
-    } else {
-        echo '<div class="account-tools"><div class="btn-toolbar">';
-        echo '<a href="action.php?username='.$userDetails->username.'&action=resetpassword&token='.sha1($actionSalt.$_SESSION['username'].'resetpassword'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-info"><i class="fa fa-unlock-alt"></i> Reset Password</a>';
-        echo '<a href="action.php?username='.$userDetails->username.'&action=extend&token='.sha1($actionSalt.$_SESSION['username'].'extend'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-primary"><i class="fa fa-calendar"></i> Extend Expiry Date</a>';
-        if($userDetails->active == 1) {
+
+    echo '<div class="account-tools"><div class="btn-toolbar">';
+    switch($userDetails->active) {
+        case 0:
+             echo '<a href="action.php?username='.$userDetails->username.'&action=activate&token='.sha1($actionSalt.$_SESSION['username'].'activate'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-success"><i class="fa fa-power-off"></i> Activate</a>';
+            break;
+        case 1:
+            echo '<a href="action.php?username='.$userDetails->username.'&action=resetpassword&token='.sha1($actionSalt.$_SESSION['username'].'resetpassword'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-info"><i class="fa fa-unlock-alt"></i> Reset Password</a>';
+            echo '<a href="action.php?username='.$userDetails->username.'&action=extend&token='.sha1($actionSalt.$_SESSION['username'].'extend'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-primary"><i class="fa fa-calendar"></i> Extend Expiry Date</a>';
             echo '<a href="action.php?username='.$userDetails->username.'&action=deactivate&token='.sha1($actionSalt.$_SESSION['username'].'deactivate'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-danger"><i class="fa fa-power-off"></i> Deactivate</a>';
-        } else {
-            echo '<a href="action.php?username='.$userDetails->username.'&action=activate&token='.sha1($actionSalt.$_SESSION['username'].'activate'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-success"><i class="fa fa-power-off"></i> Activate</a>';
-        }
-        echo '</div></div>';
+            break;
+        case 2:
+             echo '<a href="action.php?username='.$userDetails->username.'&action=activate&token='.sha1($actionSalt.$_SESSION['username'].'activate'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-success"><i class="fa fa-power-off"></i> Activate</a>';
+            break;
+        case 3:
+            echo '<a href="action.php?username='.$userDetails->username.'&action=activate&token='.sha1($actionSalt.$_SESSION['username'].'activate'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-success"><i class="fa fa-power-off"></i> Renew</a>';
+            break;
+        case 4:
+             echo '<a href="action.php?username='.$userDetails->username.'&action=activate&token='.sha1($actionSalt.$_SESSION['username'].'activate'.$userDetails->userid.$userDetails->username).'" class="btn btn-sm btn-success"><i class="fa fa-power-off"></i> Renew</a>';
+            break;
     }
+    
+    
+    if($userDetails->active == 1) {
+        
+    } else {
+       
+    }
+    echo '</div></div>';
     echo '</div>';
 }
 
@@ -308,6 +331,10 @@ function prettifyDate($date, $format="sdt") {
 	    	return date("l jS F Y H:i", $date);
 	    case 'ymd':
 	        return date("Y-m-d", $date);
+	    case 'ymdhi':
+	        return date("Y-m-d H:i", $date);
+	    case 'ymdhis':
+	        return date("Y-m-d H:i:s", $date);
     }
 }
 
@@ -331,7 +358,7 @@ function sendEmail($email, $firstname, $username, $password, $type) {
             $emailIntro = 'An account has been created for you on the University of Glasgow\'s Moodle.';
             $subject = 'Your University of Glasgow Moodle account';
             break;
-        case 'reset':
+        case 'res	et':
             $emailIntro = 'The password for your account on the University of Glasgow\'s Moodle has been reset.';
             $subject = 'Your University of Glasgow Moodle account';
             break;
@@ -341,22 +368,25 @@ function sendEmail($email, $firstname, $username, $password, $type) {
 	
     $headers = 'From: '.$systemName.'<moodlesystem@glasgow.ac.uk>';
 
-	
-	mail($email, $subject, $emailText, $headers);
+	echo 'I have tried to send am email but wasn\'t allowed.';
+	//mail($email, $subject, $emailText, $headers);
 }
 
 function createCollection($sessionName) {
-    global $grmsDB;
+    $collection = ORM::forTable('collection')->create();
+    $collection->username = $_SESSION['username'];
+    $collection->name = $sessionName;
+    $collection->createionDate = prettifyDate(time(), 'ymdhi');
+    $collection->save();
     
-    $result = $grmsDB->query('INSERT INTO collection VALUES(null, "'.$_SESSION['username'].'", "'.$sessionName.'", NOW())');
-    
-    return $grmsDB->insert_id;
+    return $collection->id;
 }
 
 function addUserToCollection($username, $collection) {
-    global $grmsDB;
-    
-    $result = $grmsDB->query('INSERT INTO usersInCollection VALUES("'.$username.'", '.$collection.')');
+    $mem = ORM::forTable('usersInCollection')->create();
+    $mem->username = $username;
+    $mem->collectionid = $collection;
+    $mem->save();
 }
 
 function getCollectionDetails($collection) {
@@ -390,6 +420,19 @@ function getUsersInCollection($collection) {
     }
     
     return $users;
+}
+
+function getRandomUsers($num=100) {
+    
+    $users = ORM::forTable('users')->raw_query('SELECT * FROM users ORDER BY RAND() LIMIT '.$num)->findMany();
+    
+    $results = Array();
+    
+    foreach($users as $thisUser) {
+        $results[] = $thisUser->username;
+    }
+    
+    return $results;
 }
 
 function getUserDetailsFromCollectionLog($collection) {
@@ -443,9 +486,9 @@ function getUserDetailsFromCollectionLog($collection) {
 }
 
 function updateLastTouched($username) {
-    global $grmsDB;
-    
-    $result = $grmsDB->query('UPDATE users SET lasttouched=NOW() WHERE username='.$username);
+    $row = ORM::forTable('users')->where(Array('username'=>$username))->findOne();
+    $row->set('lasttouched', prettifyDate(time(), 'ymd'));
+    $row->save;
 }
 
 function getConferenceWord() {
@@ -530,19 +573,18 @@ function outputCollectionPanel($collection) {
 }
 
 function logAction($action, $subject=false, $username=false) {
-    global $grmsDB;
-    
     if($username===false) {
         $username = $_SESSION['username'];
     }
-    
-    if($subject===false) {
-        $subject = 'null';
-    } else {
-        $subject = '"'.$subject.'"';
+    $log = ORM::forTable('log')->create();
+    $log->username = $username;
+    $log->action = $action;
+    if($subject !== false) {
+        $log->account = $subject;
     }
-    
-    $result = $grmsDB->query('INSERT INTO log VALUES(null, "'.$username.'", "'.$action.'", '.$subject.', NOW(), "'.$_SERVER['REMOTE_ADDR'].'")');
+    $log->timehappened = prettifyDate(time(), 'ymdhis');
+    $log->ip = $_SERVER['REMOTE_ADDR'];
+    $log->save();
 }
 
 function q($s) {
@@ -596,6 +638,45 @@ function processUserFlags($grouparray) {
     }
     
     $_SESSION['flags'] = $userFlags;
+}
+
+function statCreatedToday() {
+    $stat = ORM::forTable('users')->where(Array('creationDate'=>prettifyDate(time(), 'ymd')))->count();
+    
+    return $stat;
+}
+
+function statCurrentlyActive() {
+    $stat = ORM::forTable('users')->where(Array('active'=>1))->count();
+    
+    return $stat;
+}
+
+function statCollections() {
+    $stat = ORM::forTable('collection')->count();
+    
+    return $stat;
+}
+
+function canIDoThisToThisAccount($account, $action, $accountCreator=false) {
+    if($accountCreator===false) {
+        $accountDetails = getUserDetails($account);
+        $accountCreator = $accountDetails->creator;
+    }
+    
+    if(userHasFlag('admin')) {
+        return true;
+    }
+    
+    switch($action) {
+        case 'see-email':
+        case 'extend':
+        case 'deactivate':
+            return $accountCreator = $_SESSION['username'];
+            break;
+    }
+    
+    return false;
 }
     
 ?>
